@@ -1,9 +1,6 @@
 package com.lc.gulimall.product;
 
-import com.aliyun.oss.ClientException;
-import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClientBuilder;
-import com.aliyun.oss.OSSException;
+import com.aliyun.oss.*;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.additional.query.impl.QueryChainWrapper;
 import com.lc.gulimall.product.entity.BrandEntity;
@@ -19,6 +16,13 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
+/**
+ * 1.引入oss-starter  spring-cloud-starter-alicloud-oss
+ * 2.配置key，endpoint相关信息
+ * 3.使用ossclient对象存储进行操作
+ *
+ */
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class GulimallProductApplicationTests {
@@ -27,13 +31,16 @@ public class GulimallProductApplicationTests {
     @Autowired
     BrandService brandService;
 
+    @Autowired
+    OSSClient ossClient;
+
     @Test
     public void testUpload() throws FileNotFoundException {
         // Endpoint以华东1（杭州）为例，其它Region请按实际情况填写。
-        String endpoint = "oss-cn-hangzhou.aliyuncs.com";
-        // 阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
-        String accessKeyId = "LTAI5tDFMABwWEi9MhBnwwop";
-        String accessKeySecret = "BkCZv2WF5QrdmgTHD9FETH02JQOTzD";
+//        String endpoint = "oss-cn-hangzhou.aliyuncs.com";
+//        // 阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
+//        String accessKeyId = "LTAI5tDFMABwWEi9MhBnwwop";
+//        String accessKeySecret = "BkCZv2WF5QrdmgTHD9FETH02JQOTzD";
         // 填写Bucket名称，例如examplebucket。
         String bucketName = "gulimall---lc";
         // 填写Object完整路径，完整路径中不能包含Bucket名称，例如exampledir/exampleobject.txt。
@@ -42,8 +49,9 @@ public class GulimallProductApplicationTests {
         // 如果未指定本地路径，则默认从示例程序所属项目对应本地路径中上传文件流。
         String filePath= "D:\\Desktop\\刘聪-Java.pdf";
 
-        // 创建OSSClient实例。
-        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+//        // 创建OSSClient实例。
+//        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+
 
         try {
             InputStream inputStream = new FileInputStream(filePath);

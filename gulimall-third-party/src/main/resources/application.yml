@@ -1,10 +1,11 @@
 spring:
   cloud:
-#    alicloud:
-#      access-key: LTAI5tDFMABwWEi9MhBnwwop
-#      secret-key: BkCZv2WF5QrdmgTHD9FETH02JQOTzD
-#      oss:
-#        endpoint: oss-cn-hangzhou.aliyuncs.com
+    alicloud:
+      access-key: LTAI5tDFMABwWEi9MhBnwwop
+      secret-key: BkCZv2WF5QrdmgTHD9FETH02JQOTzD
+      oss:
+        endpoint: oss-cn-hangzhou.aliyuncs.com
+        bucket: gulimall---lc
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848

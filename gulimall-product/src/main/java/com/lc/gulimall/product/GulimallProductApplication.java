@@ -25,6 +25,13 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  *   2).配置逻辑删除的Bean(高版本省略)
  *   3).加上逻辑删除的注解@TableLogic
  *
+ * 3.JSR303
+ *   1).给Bean添加校验注解 javax.validation.constraints ,并定义自己的message提示
+ *   2).开启校验功能@Valid
+ *     效果:校验错误以后会有默认的响应、
+ *   3).给校验的bean后紧跟一个BindgResult,就可以获取到校验的结果
+ *
+ *
  *
  *
  */

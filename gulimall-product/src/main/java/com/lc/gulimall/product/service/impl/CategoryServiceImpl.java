@@ -1,7 +1,11 @@
 package com.lc.gulimall.product.service.impl;
 
+import com.lc.gulimall.product.service.CategoryBrandRelationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,11 +19,16 @@ import com.lc.common.utils.Query;
 import com.lc.gulimall.product.dao.CategoryDao;
 import com.lc.gulimall.product.entity.CategoryEntity;
 import com.lc.gulimall.product.service.CategoryService;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
 
+
+
+    @Autowired
+    private CategoryBrandRelationService categoryBrandRelationService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -62,6 +71,39 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         baseMapper.deleteBatchIds(asList);
 
     }
+
+    //[2.25.255]
+    @Override
+    public Long[] findCatelogPath(Long catelogId) {
+        List<Long> paths=new ArrayList<>();
+        List<Long> parentPath = findParentPath(catelogId, paths);
+        Collections.reverse(parentPath);
+        return parentPath.toArray(new Long[parentPath.size()]);
+    }
+
+    /**
+     * 级联更新所有的关联数据
+     * @param category
+     */
+    @Transactional
+    @Override
+    public void updateCascade(CategoryEntity category) {
+        this.updateById(category);
+        categoryBrandRelationService.updateCategory(category.getCatId(),category.getName());
+
+    }
+
+    private List<Long> findParentPath(Long catelogId,List<Long> paths){
+        CategoryEntity byId = this.getById(catelogId);
+        paths.add(catelogId);
+        Long parentCid = byId.getParentCid();
+        if(parentCid!=0){
+            return findParentPath(parentCid,paths);
+        }else {
+            return paths;
+        }
+    }
+
 
     //递归查找所有菜单的子菜单
     private List<CategoryEntity> getChildrens(CategoryEntity root,List<CategoryEntity> all){

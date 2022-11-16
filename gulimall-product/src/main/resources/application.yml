@@ -13,6 +13,9 @@ spring:
       secret-key: BkCZv2WF5QrdmgTHD9FETH02JQOTzD
       oss:
         endpoint: oss-cn-hangzhou.aliyuncs.com
+        #格式化日期的
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
   global-config:
@@ -27,4 +30,6 @@ server:
 logging:
   level:
     com.lc.gulimall: debug
+
+
 

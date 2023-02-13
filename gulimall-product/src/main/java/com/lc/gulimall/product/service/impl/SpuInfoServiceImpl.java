@@ -2,6 +2,7 @@ package com.lc.gulimall.product.service.impl;
 
 import com.lc.common.to.SkuReductionTo;
 import com.lc.common.to.SpuBoundTo;
+import com.lc.common.to.es.SkuEsModel;
 import com.lc.common.utils.R;
 import com.lc.gulimall.product.dao.SpuInfoDescDao;
 import com.lc.gulimall.product.entity.*;
@@ -15,9 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -57,6 +56,11 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     @Autowired
     private CouponFeignService couponFeignService;
 
+    @Autowired
+    private BrandService brandService;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -229,6 +233,62 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public void up(Long spuId) {
+
+        List<SkuEsModel> upProducts=new ArrayList<>();
+        //1.组装需要的数据
+
+        //1.查出当前spuid对应的所有sku信息，品牌的名字
+        List<SkuInfoEntity> skus=skuInfoService.getSkusBySpuId(spuId);
+
+
+        //TODO 4.查询当前sku的所有可以被用来检索的规格属性，
+        List<ProductAttrValueEntity> entities = productAttrValueService.baseAttrlistforspu(spuId);
+        List<Long> attrIds = entities.stream().map(ProductAttrValueEntity::getAttrId).collect(Collectors.toList());
+        List<Long>searchAttrIds=attrService.selectSearchAttrIds(attrIds);
+
+        Set<Long>
+
+
+
+
+        //2.封装每个sku的信息
+        skus.stream().map(sku->{
+            SkuEsModel esModel=new SkuEsModel();
+            BeanUtils.copyProperties(sku,esModel);
+            /**skuPrice,skuImg,hasStock,hotScore
+             *brandName,brandImg,catalogName
+             * attrs
+             * private Long attrId;
+             *         private String attrName;
+             *         private String attrValue;
+             *
+             *
+             */
+            esModel.setSkuPrice(sku.getPrice());
+            esModel.setSkuImg(sku.getSkuDefaultImg());
+            //TODO 1.发送远程调用，库存系统查询是否有库存
+            //TODO 2.热度评分，0
+            //TODO 3.查询品牌的分类和名字信息
+            //brandName,brandImg,catalogName
+            BrandEntity brandEntity = brandService.getById(esModel.getBrandId());
+            esModel.setBrandName(brandEntity.getName());
+            esModel.setBrandImg(brandEntity.getLogo());
+            CategoryEntity categoryEntity = categoryService.getById(esModel.getCatalogId());
+            esModel.setCatalogName(categoryEntity.getName());
+
+
+
+
+            return esModel;
+        });
+
+
+
+
     }
 
 }
